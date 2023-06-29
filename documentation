@@ -1,0 +1,9 @@
+aws ec2 create-volume --availability-zone=us-east-1a --size=3 --volume-type=gp2
+volume id "vol-0d895cc719b744954"
+
+kubectl get nodes --show-labels
+
+But we will create our own and attach to own nodes
+kubectl get nodes to see the nodes
+kubectl describe node <node name> | grep us-east-1 to check what is the AV this node is in.
+kubectl label nodes <node name> zone=us-east-1a

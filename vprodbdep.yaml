@@ -20,7 +20,7 @@ spec:
         #the volume we mount is not empty after formatting it, 
         # because the format creates directory. if we won't ignore it the volume will not be mounted
         args:
-          - "ignore-db-dir=lost+found" 
+          - "--ignore-db-dir=lost+found" 
         volumeMounts:
           - mountPath: /var/lib/mysql #the path to storage
             name: vpro-db-data #the name of the volume as we added to this file

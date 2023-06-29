@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vprodb
+  labels: #will be used by service definition files
+    app: vprodb
+spec:
+  selector: #if we have pod with this label, it will be considered part of the configuration file
+    matchLabels:
+      app: vprodb
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: vprodb
+    spec:
+      containers:
+      - name: vprodb
+        image: eliasi/vprofiledb #the image from containarazition project
+        #the volume we mount is not empty after formatting it, 
+        # because the format creates directory. if we won't ignore it the volume will not be mounted
+        args:
+          - "ignore-db-dir=lost+found" 
+        volumeMounts:
+          - mountPath: /var/lib/mysql #the path to storage
+            name: vpro-db-data #the name of the volume as we added to this file
+        ports:
+          - name: vprodb-port
+            containerPort: 3306
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: app-secret #name of the secret deployment
+                key: db-pass #name of the secret object in the deployment
+      nodeSelector:
+        zone: us-east-1a
+      volumes: #we will attach the volume we created earlier, and mount it to the pod
+        - name: vpro-db-data
+          awsElasticBlockStore:
+            volumeID: vol-0d895cc719b744954
+            fsType: ext4

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vpromq01 #same as in application.properties memcached.active.host
+spec:
+  selector:
+    app: vpromq01 # the label of the pod to be attached to
+  ports:
+  - port: 15672
+    targetPort: vpromq01-port
+    protocol: TCP
+  type: ClusterIP #private IP to be used internally

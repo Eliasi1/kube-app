@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vproapp
+  labels:
+    app: vproapp
+spec:
+  selector:
+    matchLabels:
+      app: vproapp
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: vproapp
+    spec:
+      containers:
+        - name: vproapp
+          image: eliasi/vprofileapp
+          ports:
+          - name: vproapp-port
+            containerPort: 8080
+      initContainers: # we want the vprodb and memcached to be ready before launchint the application. so init container will check it, only when completed the app container will launch
+        - name: init-mydb
+          image: busybox # just an image made to keep this initcontainer busy. as long as it busy the app container wont run
+          command: ['sh','-c','untill nslookup vprodb; do echo waiting for mydb; sleep 2; done;']
+        - name: init-memcache
+          image: busybox # just an image made to keep this initcontainer busy. as long as it busy the app container wont run
+          command: ['sh','-c','untill nslookup vprocache01; do echo waiting for memcache; sleep 2; done;']
